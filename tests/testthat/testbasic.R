@@ -17,10 +17,27 @@ test_that("Basic methods appear to work", {
     for (i in 1:2) {
         inv <- cacheSolve(cm)
         expect_is(inv, "matrix")
-        expect_equal(nrow(inv), 5)
+        expect_equal(nrow(inv), N)
 
         product <- m %*% inv
         expect_equal(product, diag(N))
+    }
+})
+
+test_that("Resetting the matrix resets the cache", {
+    cm <- makeCacheMatrix()
+    for (N in 1:5) {
+        m <- matrix(rnorm(N*N), nrow = N)
+        cm$set(m)
+        inv <- cacheSolve(cm)
+        expect_is(inv, "matrix")
+        expect_equal(nrow(inv), N)
+
+        product <- m %*% inv
+        expect_equal(product, diag(N))
+
+        cached <- cm$getinverse()
+        expect_identical(cached, inv)
     }
 })
 
